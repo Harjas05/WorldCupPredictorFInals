@@ -44,7 +44,7 @@ def remove_invalid_rows(matches: pd.DataFrame) -> pd.DataFrame:
 
     return matches.reset_index(drop=True)
 
-def add_rows(matches: pd.DataFrame) -> pd.DataFrame:
+def add_result_columns(matches: pd.DataFrame) -> pd.DataFrame:
     matches["home_goal_diff"] = matches["home_score"] - matches["away_score"]
     matches["result"] = "draw"
 
@@ -60,7 +60,7 @@ def clean_results(matches: pd.DataFrame | None = None) -> pd.DataFrame:
     matches = remove_invalid_rows(matches)
     matches = remove_duplicates(matches)
     matches = remove_invalid_scores(matches)
-    matches = add_rows(matches)
+    matches = add_result_columns(matches)
 
     return matches.sort_values("date").reset_index(drop=True)
 
