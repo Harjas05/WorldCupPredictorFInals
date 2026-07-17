@@ -1,6 +1,9 @@
 import pandas as pd
 
-from load_results import load_clean_dataframe
+try:
+    from .load_results import load_clean_dataframe
+except ImportError:
+    from load_results import load_clean_dataframe
 
 
 def remove_duplicates(matches: pd.DataFrame) -> pd.DataFrame:
@@ -50,15 +53,19 @@ def add_rows(matches: pd.DataFrame) -> pd.DataFrame:
     return matches.reset_index(drop=True)
 
 
+def clean_results(matches: pd.DataFrame | None = None) -> pd.DataFrame:
+    if matches is None:
+        matches = load_clean_dataframe()
+
+    matches = remove_invalid_rows(matches)
+    matches = remove_duplicates(matches)
+    matches = remove_invalid_scores(matches)
+    matches = add_rows(matches)
+
+    return matches.sort_values("date").reset_index(drop=True)
+
 
 if __name__ == "__main__":
-    matches = load_clean_dataframe()
-    print("loaded data frame")
-    matches = remove_invalid_rows(matches)
-    print("removed invalid rows")
-    matches = remove_duplicates(matches)
-    print("removed duplicates")
-    matches = remove_invalid_scores(matches)
-    print("removed invalid scores")
-    matches = add_rows(matches)
-    print("added wins and goal differences")
+    matches = clean_results()
+    print(matches.head())
+    print(matches.info())
